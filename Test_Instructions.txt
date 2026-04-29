@@ -1,0 +1,40 @@
+Credly_Docebo_Badge_Integration CFS Hygienic Design
+Purpose:  
+Completion of an eligible course in Docebo automates the issuance of the CFS Hygienic Design badge from Credly.  Eligible courses include 
+487 - Hygienic Design Certification Modules
+468 - CFS Hygienic Design Certification Case Simulation v1
+470 - Hygienic Design Certification Modules
+431 - CFS Hygienic Design Certification Case Simulation
+502 - Hygienic Design Certification Modules
+
+Requirements:
+Access to Docebo and Credly
+List of courses for the Condition
+An Active Webhook in Docebo ( Wehook Name:  Automate)
+Premium Power Automate License
+Notes:
+This process uses a Docebo webhook
+The Docebo Course list contains the course codes for all eligible Docebo courses.
+This flow is specific to one badge with badge id: c694a76a-62a5-4e95-b76f-d31f345288c6
+This flow can easily be duplicated with a switch to  include additional badges
+
+Flows:  Num of Flows 1
+Credly_Docebo_Badge_Integration CFS Hygenic Design
+The flow is triggered by Docebo  whenever any course is completed; the flow will run.  The results are parsed to identify the course ID
+A condition is used to run the remainder of the flow if the Course ID is equal to 
+487
+468
+470
+431
+502
+If the condition is satisfied, to capture the username, an HTTP action runs to the Docebo endpoint: 
+https://intralox.docebosaas.com/manage/v1/user/{{user_id}}
+The user_id, first name, and last name are captured from the trigger that is parsed
+A condition checks if the result is empty
+If no data is returned, the condition is true, and no actions are taken
+If the condition is false, data is returned. An HTTP Post is made to Credly to create the badge
+https://api.credly.com/v1/organizations/c694a76a-62a5-4e95-b76f-d31f345288c6/badges
+The body for the post is captured from the HTTP request from the Docebo call that captured the user information
+
+Two parallel send email actions are used.  The first,  if the HTTP action succeeds and a badge is created, an email is sent to Crystal that a new badge has been created.  If badge creation fails, for example, when the badge already exists.  An email is sent to the recipient notifying them that the badge failed or that the badge already exists. 
+End Test
